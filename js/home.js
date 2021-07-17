@@ -31,10 +31,13 @@ const createInnerHtml = () => {
             <td>${employeePayrollData._gender}</td>
             <td>${getDeptHtml(employeePayrollData._department)}</td>
             <td>${employeePayrollData._salary}</td>
-            <td>${formatDate(employeePayrollData._startDate)}</td>
+            <td>${stringifyDate(employeePayrollData._startDate)}</td>
+            
             <td>
-                <img name="${employeePayrollData._id}" onclick="remove()" alt="delete" src="../assets/icons/delete-black-18dp.svg">
-                <img name="${employeePayrollData._id}" onclick="update()" alt="edit" src="../assets/icons/create-black-18dp.svg">
+                <img id="${employeePayrollData._id}" onclick="remove(this)" 
+                src="../assets/icons/delete-black-18dp.svg" alt="delete" >
+                <img id="${employeePayrollData._id}" onclick="update(this)" 
+                 src="../assets/icons/create-black-18dp.svg" alt="edit">
             </td>
     </tr>`;
     }
@@ -49,11 +52,24 @@ const getDeptHtml = (deptList) => {
     return deptHtml;
 }
 
-const formatDate = (date) => {
-    let startDate = new Date(date);
-    const options = {
-        year: 'numeric', month: 'long', day: 'numeric'
-    };
-    const empDate = !startDate ? "undefined" : startDate.toLocaleDateString("en-IN", options);
-    return empDate;
+const stringifyDate = (Date) => {
+    const options = { date: 'numeric', month: 'short', year: 'numeric' };
+    const newDate = !Date ? "undefined" :
+        new Date(Date.parse(Date)).toLocaleDateString('en-IN', options);
+    return newDate;
+}
+
+
+const remove = (node) => {
+    let employeePayrollData = employeePayrollList.find(empDate => empDate._id == node._id);
+    if (!employeePayrollData) return;
+    const index = employeePayrollList
+        .map(empDate => empDate._id)
+        .indexOf(employeePayrollData._id);
+    employeePayrollList.splice(index, 1);
+    localStorage.setItem("EmployeePayrollList", JSON.stringify(employeePayrollList));
+    document.querySelector(".emp-count").textContent = employeePayrollList.length;
+
+    createInnerHtml();
+
 }
